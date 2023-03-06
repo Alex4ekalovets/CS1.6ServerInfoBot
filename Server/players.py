@@ -63,8 +63,7 @@ def player_on_server(bot_preffix: str = '[BOTik]') -> Dict:
         'bots_count': 0,
     }
     for name in names:
-        if 'left' in str(name):
-            # and bot_preffix not in name.text:
+        if 'left' in str(name) and bot_preffix not in name.text:
             players['names'].add(name.text)
         if bot_preffix in name.text:
             players['bots_count'] += 1

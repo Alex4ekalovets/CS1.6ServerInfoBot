@@ -32,8 +32,8 @@ def show_servers_players(message: Message) -> None:
         players_names = '\n'.join(players['names'])
         bot.send_message(
             message.chat.id,
-            f"Человек на сервере: {players['players_count']}:\n"
-            f"{players_names}\nБотов: {players['bots_count']}"
+            f"👨‍🦳: {players['players_count']} 🤖: {players['bots_count']}\n"
+            f"{players_names}"
         )
 
 
@@ -45,10 +45,10 @@ def auto_update_on(message: Message) -> None:
     Запускается по таймеру одного чата, но выводит информацию во всех чатах, где включено автообновление
     """
     ServerStatus.chats_id_auto_update.add(message.chat.id)
+    logger.info(f"Чатов с автообновлением: {len(ServerStatus.chats_id_auto_update)}")
     if len(ServerStatus.chats_id_auto_update) == 1:
         while True:
             show_players_after_changes()
-            logger.info(f"Чатов с автообновлением: {len(ServerStatus.chats_id_auto_update)}")
             if len(ServerStatus.chats_id_auto_update) == 0:
                 logger.info("Автообновление отключено")
                 break
@@ -60,6 +60,7 @@ def auto_update_off(message: Message) -> None:
     """Отключает автообновление количества игроков на сервере."""
     if message.chat.id in ServerStatus.chats_id_auto_update:
         ServerStatus.chats_id_auto_update.remove(message.chat.id)
+        logger.info(f"Чатов с автообновлением: {len(ServerStatus.chats_id_auto_update)}")
 
 
 def show_players_after_changes():
@@ -71,11 +72,15 @@ def show_players_after_changes():
     else:
         if ServerStatus.players != players['names']:
             for chat_id in ServerStatus.chats_id_auto_update:
+                if len(ServerStatus.players) > len(players['names']):
+                    icon = "📈"
+                else:
+                    icon = "📉"
                 ServerStatus.players = players['names']
                 players_names = '\n'.join(players['names'])
                 bot.send_message(
                     chat_id,
-                    f"Человек на сервере: {players['players_count']}:\n"
+                    f"👨‍🦳: {players['players_count']} {icon}\n"
                     f"{players_names}"
                 )
                 logger.success(f"Направлен ответ в чат с id: {chat_id}")

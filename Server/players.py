@@ -21,6 +21,7 @@ class ServerStatus:
         last_update_time = datetime.datetime.min
         chats_id_auto_update = set()
         current_map = ''
+        next_delete_message = {}
 
 
 def server_info_request(

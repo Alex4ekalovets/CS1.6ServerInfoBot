@@ -84,11 +84,14 @@ def show_players_after_changes(delay: int, change_map_delay: int) -> int:
                     icon = "📉"
                 ServerStatus.players = players['names']
                 players_names = '\n'.join(players['names'])
-                bot.send_message(
+                if chat_id in ServerStatus.next_delete_message:
+                    bot.delete_message(chat_id, ServerStatus.next_delete_message[chat_id])
+                message = bot.send_message(
                     chat_id,
                     f"{icon}На сервере: {players['players_count']}\n"
                     f"{players_names}"
                 )
+                ServerStatus.next_delete_message[chat_id] = message.id
                 logger.success(f"Направлен ответ в чат с id: {chat_id}")
         elif players['is_changing_map']:
             return change_map_delay

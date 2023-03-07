@@ -3,6 +3,7 @@
 Functions:
     server_info_request: Запросить данные по серверу
     player_on_server: Вернуть информацию по игрокам на сервере
+    logging_map_changing: Логирование смены карты
 """
 import datetime
 
@@ -19,11 +20,13 @@ class ServerStatus:
         players = set()
         last_update_time = datetime.datetime.min
         chats_id_auto_update = set()
+        current_map = ''
 
 
 def server_info_request(
         server: str = 'https://csserv.ru/',
         server_ip: str = '90.189.165.248_27035') -> requests.models.Response:
+    """Запрос информации о сервере."""
 
     headers = {
         'Accept': '*/*',
@@ -58,9 +61,11 @@ def server_info_request(
 
 
 def player_on_server() -> Dict:
+    """Получение списка и количества игроков на сервере."""
     r = server_info_request()
     soup = bs(r.text, "html.parser")
     names = soup.find_all('td', class_='text_white_')
+    logging_map_changing(soup)
     players = {
         'names': set(),
         'players_count': 0,
@@ -77,5 +82,9 @@ def player_on_server() -> Dict:
     return players
 
 
-if __name__ == '__main__':
-    print(player_on_server())
+def logging_map_changing(soup: bs) -> None:
+    """Логирование смены карты на сервере."""
+    current_map = soup.find_all('img')[1]['title']
+    if current_map != ServerStatus.current_map:
+        logger.info(f"Смена карты с {ServerStatus.current_map} на {current_map}")
+        ServerStatus.current_map = current_map

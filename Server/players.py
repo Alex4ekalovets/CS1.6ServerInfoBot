@@ -67,8 +67,11 @@ def player_on_server() -> Dict:
         'bots_count': 0,
     }
     for name in names:
+        print(name)
         is_player = all([bot_nickname not in name.text for bot_nickname in BOTS_NICKNAMES])
+        print(is_player)
         is_bot = any([bot_nickname in name.text for bot_nickname in BOTS_NICKNAMES])
+        print(is_bot)
         if 'left' in str(name) and is_player:
             players['names'].add(name.text)
         if is_bot:

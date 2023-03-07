@@ -20,4 +20,4 @@ DEFAULT_COMMANDS = (
 COMMAND_MESSAGES = ["/" + DEFAULT_COMMANDS[command][0] for command in range(0, len(DEFAULT_COMMANDS))]
 COMMAND_MESSAGES.extend(["/start", ])
 # укажите текст, который может содержаться в никнеймах ботов для исключения
-BOTS_NICKNAMES = ['[BOTik]', 'addons/amxmods']
+BOTS_NICKNAMES = ['[BOTik]', 'addons/amxmodx']

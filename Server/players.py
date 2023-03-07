@@ -48,7 +48,10 @@ def server_info_request(
         headers=headers,
         data=data
     )
-    logger.success("Направлен запрос серверу")
+    if response.status_code == 200:
+        logger.success("Получен ответ от сервера")
+    else:
+        logger.warning(f"Статус-код запроса: {response.status_code}")
     return response
 
 

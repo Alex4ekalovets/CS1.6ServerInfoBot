@@ -72,7 +72,7 @@ def show_players_after_changes():
     else:
         if ServerStatus.players != players['names']:
             for chat_id in ServerStatus.chats_id_auto_update:
-                if len(ServerStatus.players) > len(players['names']):
+                if len(ServerStatus.players) < len(players['names']):
                     icon = "📈"
                 else:
                     icon = "📉"
@@ -80,7 +80,7 @@ def show_players_after_changes():
                 players_names = '\n'.join(players['names'])
                 bot.send_message(
                     chat_id,
-                    f"👨‍🦳: {players['players_count']} {icon}\n"
+                    f"{icon}: {players['players_count']}\n"
                     f"{players_names}"
                 )
                 logger.success(f"Направлен ответ в чат с id: {chat_id}")

@@ -86,10 +86,10 @@ def show_players_after_changes(delay: int, change_map_delay: int) -> int:
                 players_names = '\n'.join(players['names'])
                 bot.send_message(
                     chat_id,
-                    f"{icon}: {players['players_count']}\n"
+                    f"{icon}На сервере: {players['players_count']}\n"
                     f"{players_names}"
                 )
                 logger.success(f"Направлен ответ в чат с id: {chat_id}")
         elif players['is_changing_map']:
             return change_map_delay
-        return delay
+    return delay

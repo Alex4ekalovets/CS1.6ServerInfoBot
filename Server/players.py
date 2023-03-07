@@ -12,6 +12,8 @@ from typing import Dict
 
 from utils.logging import logger
 
+from config_data.config import BOTS_NICKNAMES
+
 
 class ServerStatus:
         players = set()
@@ -55,7 +57,7 @@ def server_info_request(
     return response
 
 
-def player_on_server(bot_preffix: str = '[BOTik]') -> Dict:
+def player_on_server() -> Dict:
     r = server_info_request()
     soup = bs(r.text, "html.parser")
     names = soup.find_all('td', class_='text_white_')
@@ -65,9 +67,11 @@ def player_on_server(bot_preffix: str = '[BOTik]') -> Dict:
         'bots_count': 0,
     }
     for name in names:
-        if 'left' in str(name) and bot_preffix not in name.text:
+        is_player = all([bot_nickname not in name.text for bot_nickname in BOTS_NICKNAMES])
+        is_bot = any([bot_nickname in name.text for bot_nickname in BOTS_NICKNAMES])
+        if 'left' in str(name) and is_player:
             players['names'].add(name.text)
-        if bot_preffix in name.text:
+        if is_bot:
             players['bots_count'] += 1
         players['players_count'] = len(players['names'])
     return players

@@ -3,7 +3,7 @@
 Functions:
     server_info_request: Запросить данные по серверу
     player_on_server: Вернуть информацию по игрокам на сервере
-    logging_map_changing: Логирование смены карты
+    is_changing_map: Логирование смены карты
 """
 import datetime
 
@@ -65,11 +65,11 @@ def player_on_server() -> Dict:
     r = server_info_request()
     soup = bs(r.text, "html.parser")
     names = soup.find_all('td', class_='text_white_')
-    logging_map_changing(soup)
     players = {
         'names': set(),
         'players_count': 0,
         'bots_count': 0,
+        'is_changing_map': is_changing_map(soup)
     }
     for name in names:
         is_player = all([bot_nickname not in name.text for bot_nickname in BOTS_NICKNAMES])
@@ -82,9 +82,11 @@ def player_on_server() -> Dict:
     return players
 
 
-def logging_map_changing(soup: bs) -> None:
+def is_changing_map(soup: bs) -> bool:
     """Логирование смены карты на сервере."""
     current_map = soup.find_all('img')[1]['title']
     if current_map != ServerStatus.current_map:
         logger.info(f"Смена карты с {ServerStatus.current_map} на {current_map}")
         ServerStatus.current_map = current_map
+        return True
+    return False

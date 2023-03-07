@@ -21,3 +21,5 @@ COMMAND_MESSAGES = ["/" + DEFAULT_COMMANDS[command][0] for command in range(0, l
 COMMAND_MESSAGES.extend(["/start", ])
 # укажите текст, который может содержаться в никнеймах ботов для исключения
 BOTS_NICKNAMES = ['[BOTik]', 'addons/']
+DELAY = 10
+CHANGING_MAP_DELAY = 50

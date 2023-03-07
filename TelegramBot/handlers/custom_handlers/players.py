@@ -20,6 +20,8 @@ from Server.players import player_on_server, ServerStatus
 
 from utils.logging import logger
 
+from config_data.config import DELAY, CHANGING_MAP_DELAY
+
 
 @bot.message_handler(commands=["players"])
 def show_servers_players(message: Message) -> None:
@@ -48,11 +50,11 @@ def auto_update_on(message: Message) -> None:
     logger.info(f"Чатов с автообновлением: {len(ServerStatus.chats_id_auto_update)}")
     if len(ServerStatus.chats_id_auto_update) == 1:
         while True:
-            show_players_after_changes()
+            delay = show_players_after_changes(DELAY, CHANGING_MAP_DELAY)
             if len(ServerStatus.chats_id_auto_update) == 0:
                 logger.info("Автообновление отключено")
                 break
-            time.sleep(10)
+            time.sleep(delay)
 
 
 @bot.message_handler(commands=["auto_update_off"])
@@ -63,15 +65,18 @@ def auto_update_off(message: Message) -> None:
         logger.info(f"Чатов с автообновлением: {len(ServerStatus.chats_id_auto_update)}")
 
 
-def show_players_after_changes():
-    """Показывает количество игроков, если оно изменилось."""
+def show_players_after_changes(delay: int, change_map_delay: int) -> int:
+    """
+    Показывает количество игроков, если оно изменилось.
+
+    Возвращает задержку повторного запроса. Задержка больше при смене карты
+    """
     try:
         players = player_on_server()
     except Exception as ex:
         logger.error(f'Ошибка при обращении к серверу {ex}')
     else:
-        is_changing_map = players['players_count'] == 0 and players['bots_count'] == 0
-        if ServerStatus.players != players['names'] and not is_changing_map:
+        if ServerStatus.players != players['names'] and not players['is_changing_map']:
             for chat_id in ServerStatus.chats_id_auto_update:
                 if len(ServerStatus.players) < len(players['names']):
                     icon = "📈"
@@ -85,3 +90,6 @@ def show_players_after_changes():
                     f"{players_names}"
                 )
                 logger.success(f"Направлен ответ в чат с id: {chat_id}")
+        elif players['is_changing_map']:
+            return change_map_delay
+        return delay

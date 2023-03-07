@@ -70,7 +70,8 @@ def show_players_after_changes():
     except Exception as ex:
         logger.error(f'Ошибка при обращении к серверу {ex}')
     else:
-        if ServerStatus.players != players['names']:
+        is_changing_map = players['players_count'] == 0 and players['bots_count'] == 0
+        if ServerStatus.players != players['names'] and not is_changing_map:
             for chat_id in ServerStatus.chats_id_auto_update:
                 if len(ServerStatus.players) < len(players['names']):
                     icon = "📈"

@@ -27,23 +27,35 @@ def show_servers_players(message: Message) -> None:
 
 
 @bot.message_handler(commands=["auto_update_on"])
-def send_players_info(message: Message) -> None:
+def auto_update_on(message: Message) -> None:
     """Показывает количество игроков на сервере."""
-    ServerStatus.auto_update = True
-    while ServerStatus.auto_update:
-        players = player_on_server()
-        if ServerStatus.players != players['names']:
-            logger.info("Количество игроков изменилось")
-            ServerStatus.players = players['names']
-            players_names = '\n'.join(players['names'])
-            bot.send_message(
-                message.chat.id,
-                f"Человек сервере сейчас: {players['players_count']}:\n{players_names}\nБотов: {players['bots_count']}"
-            )
+    ServerStatus.chats_id_auto_update.add(message.chat.id)
+    while True:
+        show_players_after_changes()
         time.sleep(10)
-        logger.info("Направлен ответ пользователю")
 
 
 @bot.message_handler(commands=["auto_update_off"])
 def auto_update_off(message: Message) -> None:
-    ServerStatus.auto_update = False
+    ServerStatus.chats_id_auto_update.remove(message.chat.id)
+
+
+def show_players_after_changes():
+    for chat_id in ServerStatus.chats_id_auto_update:
+        try:
+            players = player_on_server()
+        except Exception as ex:
+            logger.error(f'Ошибка при обращении к серверу {ex}')
+        else:
+            if ServerStatus.players != players['names']:
+                logger.info("Количество игроков изменилось")
+                ServerStatus.players = players['names']
+                players_names = '\n'.join(players['names'])
+                bot.send_message(
+                    chat_id,
+                    f"Человек сервере сейчас: {players['players_count']}:\n{players_names}\nБотов: {players['bots_count']}"
+                )
+            logger.success(f"Направлен ответ пользователю{chat_id}")
+
+
+

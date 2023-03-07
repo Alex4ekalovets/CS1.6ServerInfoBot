@@ -16,7 +16,7 @@ from utils.logging import logger
 class ServerStatus:
         players = set()
         last_update_time = datetime.datetime.min
-        auto_update = False
+        chats_id_auto_update = set()
 
 
 def server_info_request(
@@ -43,13 +43,12 @@ def server_info_request(
     data = {
         'server_address': server_ip,
     }
-
     response = requests.post(
         f'{server}includes/server/info/index.php',
         headers=headers,
         data=data
     )
-    logger.info("Направлен запрос серверу")
+    logger.success("Направлен запрос серверу")
     return response
 
 

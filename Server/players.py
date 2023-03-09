@@ -77,9 +77,9 @@ def server_info_request(
         data=data
     )
     if response.status_code == 200:
-        logger.success("Получен ответ от сервера")
+        logger.success("Received a response from the server")
     else:
-        logger.warning(f"Статус-код запроса: {response.status_code}")
+        logger.warning(f"Status code: {response.status_code}")
     return response
 
 
@@ -108,5 +108,5 @@ def is_changing_map(soup: bs) -> None:
     """Логирование смены карты на сервере."""
     current_map = soup.find_all('img')[1]['title']
     if current_map != ServerStatus.current_map:
-        logger.info(f"Смена карты с {ServerStatus.current_map} на {current_map}")
+        logger.info(f"Changed map form {ServerStatus.current_map} to {current_map}")
         ServerStatus.current_map = current_map

@@ -30,7 +30,7 @@ def show_players_on_server(message: Message) -> None:
     try:
         players = player_on_server()
     except Exception as ex:
-        logger.error(f'Ошибка при обращении к серверу {ex}')
+        logger.error(f'{ex}')
     else:
         players_names = '\n'.join(players['names'])
         bot.send_message(
@@ -44,7 +44,7 @@ def show_players_on_server(message: Message) -> None:
 def auto_update_on(message: Message) -> None:
     """ Запускает автообновление количества игроков на сервере."""
     server_status.add_autoupdate_chat(message.chat.id)
-    logger.info(f"Чатов с автообновлением: {len(server_status.chats_id_with_auto_update)}")
+    logger.info(f"Chats with autoupdate: {len(server_status.chats_id_with_auto_update)}")
 
 
 def auto_update() -> None:
@@ -56,9 +56,9 @@ def auto_update() -> None:
 def auto_update_off(message: Message) -> None:
     """Отключает автообновление количества игроков на сервере."""
     server_status.remove_autoupdate_chat(message.chat.id)
-    logger.info(f"Чатов с автообновлением: {len(server_status.chats_id_with_auto_update)}")
+    logger.info(f"Chats with autoupdate: {len(server_status.chats_id_with_auto_update)}")
     if len(server_status.chats_id_with_auto_update) == 0:
-        logger.info("Автообновление отключено")
+        logger.info("Autoupdate off")
 
 
 def show_players_if_changed() -> None:
@@ -66,7 +66,7 @@ def show_players_if_changed() -> None:
     try:
         players = player_on_server()
     except Exception as ex:
-        logger.error(f'Ошибка при обращении к серверу: {ex}')
+        logger.error(f'{ex}')
     else:
         if server_status.players != players['names']:
             for chat_id in server_status.chats_id_with_auto_update:
@@ -81,5 +81,5 @@ def show_players_if_changed() -> None:
                     f"{players_names}"
                 )
                 server_status.next_delete_message[chat_id] = message.id
-                logger.success(f"Направлен ответ в чат с id: {chat_id}")
+                logger.success(f"Reply sent to chat with id: {chat_id}")
 

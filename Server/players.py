@@ -5,7 +5,8 @@ Functions:
     player_on_server: Вернуть информацию по игрокам на сервере
     is_changing_map: Логирование смены карты
 """
-import datetime
+import json
+import os
 
 import requests
 from bs4 import BeautifulSoup as bs
@@ -17,11 +18,32 @@ from config_data.config import BOTS_NICKNAMES
 
 
 class ServerStatus:
-        players = set()
-        last_update_time = datetime.datetime.min
-        chats_id_auto_update = set()
-        current_map = ''
-        next_delete_message = {}
+    def __init__(self):
+        self.players = set()
+        self.current_map = ''
+        self.next_delete_message = {}
+        if os.path.isfile('chats_with_autoupdate.json'):
+            with open('chats_with_autoupdate.json', 'r') as file:
+                self.chats_id_with_auto_update = json.load(file)
+                print(self.chats_id_with_auto_update)
+        else:
+            self.chats_id_with_auto_update = dict()
+
+    def add_autoupdate_chat(self, chat_id):
+        chat_id = str(chat_id)
+        if chat_id not in self.chats_id_with_auto_update:
+            self.chats_id_with_auto_update[chat_id] = None
+            self.save_chats_to_json()
+
+    def remove_autoupdate_chat(self, chat_id):
+        chat_id = str(chat_id)
+        if chat_id in self.chats_id_with_auto_update:
+            self.chats_id_with_auto_update.pop(chat_id)
+            self.save_chats_to_json()
+
+    def save_chats_to_json(self):
+        with open('chats_with_autoupdate.json', 'w') as file:
+            json.dump(self.chats_id_with_auto_update, file)
 
 
 def server_info_request(
@@ -70,7 +92,6 @@ def player_on_server() -> Dict:
         'names': set(),
         'players_count': 0,
         'bots_count': 0,
-        'is_changing_map': is_changing_map(soup)
     }
     for name in names:
         is_player = all([bot_nickname not in name.text for bot_nickname in BOTS_NICKNAMES])
@@ -83,11 +104,9 @@ def player_on_server() -> Dict:
     return players
 
 
-def is_changing_map(soup: bs) -> bool:
+def is_changing_map(soup: bs) -> None:
     """Логирование смены карты на сервере."""
     current_map = soup.find_all('img')[1]['title']
     if current_map != ServerStatus.current_map:
         logger.info(f"Смена карты с {ServerStatus.current_map} на {current_map}")
         ServerStatus.current_map = current_map
-        return True
-    return False

@@ -4,14 +4,14 @@ import threading
 import schedule as schedule
 from telebot import custom_filters, types
 
-from TelegramBot import handlers
-from TelegramBot.handlers.custom_handlers.players import auto_update
 from config_data.config import DELAY
 from loader import bot
+from TelegramBot import handlers
+from TelegramBot.handlers.custom_handlers.players import auto_update
 from utils.set_bot_commands import set_default_commands
 
 
-def starter():
+def starter() -> None:
     """Запускает функцию auto_update каждые DELAY секунд"""
     schedule.every(DELAY).seconds.do(auto_update)
     while True:
@@ -24,6 +24,3 @@ if __name__ == "__main__":
     t2 = threading.Thread(target=starter)
     t2.start()
     bot.infinity_polling()
-
-
-

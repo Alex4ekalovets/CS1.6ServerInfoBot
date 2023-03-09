@@ -1,1 +1,1 @@
-from .custom_handlers import players
+from . import custom_handlers

@@ -15,12 +15,17 @@ DEFAULT_COMMANDS = (
     ("players", "🔫Игроки на сервере"),
     ("auto_update_on", "🔄Включить автообновление"),
     ("auto_update_off", "🚫Выключить автообновление"),
-
 )
-COMMAND_MESSAGES = ["/" + DEFAULT_COMMANDS[command][0] for command in range(0, len(DEFAULT_COMMANDS))]
-COMMAND_MESSAGES.extend(["/start", ])
+COMMAND_MESSAGES = [
+    "/" + DEFAULT_COMMANDS[command][0] for command in range(0, len(DEFAULT_COMMANDS))
+]
+COMMAND_MESSAGES.extend(
+    [
+        "/start",
+    ]
+)
 # укажите текст, который может содержаться в никнеймах ботов для исключения
-BOTS_NICKNAMES = ['[BOTik]', 'addons/']
+BOTS_NICKNAMES = ["[BOTik]", "addons/"]
 # задержка при обращении к сайту для запроса количества игроков
 DELAY = 10
 #  укажите True, если необходимо удалять предыдущее сообщение бота при включенном автоматическом обновлении

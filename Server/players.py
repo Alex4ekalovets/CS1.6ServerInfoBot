@@ -5,42 +5,15 @@ Functions:
     player_on_server: Вернуть информацию по игрокам на сервере
     is_changing_map: Логирование смены карты
 """
-import json
-import os
-from typing import Dict, Set, Any
+
+from typing import Tuple
 
 import requests
 from bs4 import BeautifulSoup as bs
 
 from config_data.config import BOTS_NICKNAMES
 from utils.logging import logger
-
-
-class ServerStatus:
-    def __init__(self) -> None:
-        self.players: Set = set()
-        self.current_map = ""
-        self.next_delete_message: Dict = dict()
-        if os.path.isfile("chats_with_autoupdate.json"):
-            with open("chats_with_autoupdate.json", "r") as file:
-                self.chats_id_with_auto_update = json.load(file)
-                print(self.chats_id_with_auto_update)
-        else:
-            self.chats_id_with_auto_update = dict()
-
-    def add_autoupdate_chat(self, chat_id: int) -> None:
-        if str(chat_id) not in self.chats_id_with_auto_update:
-            self.chats_id_with_auto_update[str(chat_id)] = None
-            self.save_chats_to_json()
-
-    def remove_autoupdate_chat(self, chat_id: int) -> None:
-        if str(chat_id) in self.chats_id_with_auto_update:
-            self.chats_id_with_auto_update.pop(str(chat_id))
-            self.save_chats_to_json()
-
-    def save_chats_to_json(self) -> None:
-        with open("chats_with_autoupdate.json", "w") as file:
-            json.dump(self.chats_id_with_auto_update, file)
+from loader import current_state as cs
 
 
 def server_info_request(
@@ -78,32 +51,28 @@ def server_info_request(
     return response
 
 
-def player_on_server() -> Dict:
+def player_on_server() -> Tuple:
     """Получение списка и количества игроков на сервере."""
     r = server_info_request()
     soup = bs(r.text, "html.parser")
-    names = soup.find_all("td", class_="text_white_")
-    players: Dict[str, Any] = {
-        "names": set(),
-        "players_count": 0,
-        "bots_count": 0,
-    }
-    for name in names:
+    players_info = soup.find_all("td", class_="text_white_")
+    players_names = set()
+    bots_count = 0
+    for player_info in players_info:
         is_player = all(
-            [bot_nickname not in name.text for bot_nickname in BOTS_NICKNAMES]
+            [bot_nickname not in player_info.text for bot_nickname in BOTS_NICKNAMES]
         )
-        is_bot = any([bot_nickname in name.text for bot_nickname in BOTS_NICKNAMES])
-        if "left" in str(name) and is_player:
-            players["names"].add(name.text)
+        is_bot = any([bot_nickname in player_info.text for bot_nickname in BOTS_NICKNAMES])
+        if "left" in str(player_info) and is_player:
+            players_names.add(player_info.text)
         if is_bot:
-            players["bots_count"] += 1
-        players["players_count"] = len(players["names"])
-    return players
+            bots_count += 1
+    return players_names, len(players_names), bots_count
 
 
 def is_changing_map(soup: bs) -> None:
     """Логирование смены карты на сервере."""
     current_map = soup.find_all("img")[1]["title"]
-    if current_map != ServerStatus.current_map:
-        logger.info(f"Changed map form {ServerStatus.current_map} to {current_map}")
-        ServerStatus.current_map = current_map
+    if current_map != cs.current_map:
+        logger.info(f"Changed map form {cs.current_map} to {current_map}")
+        cs.current_map = current_map

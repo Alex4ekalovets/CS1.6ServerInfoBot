@@ -58,6 +58,7 @@ def player_on_server() -> Tuple:
     players_info = soup.find_all("td", class_="text_white_")
     players_names = set()
     bots_count = 0
+    is_changing_map(soup=soup)
     for player_info in players_info:
         is_player = all(
             [bot_nickname not in player_info.text for bot_nickname in BOTS_NICKNAMES]

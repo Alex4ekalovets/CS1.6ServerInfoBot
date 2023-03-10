@@ -11,13 +11,13 @@ from typing import Tuple
 import requests
 from bs4 import BeautifulSoup as bs
 
-from config_data.config import BOTS_NICKNAMES
+from config_data.config import BOTS_NICKNAMES, SERVER_IP
 from utils.logging import logger
 from loader import current_state as cs
 
 
 def server_info_request(
-    server: str = "https://csserv.ru/", server_ip: str = "90.189.165.248_27035"
+    server: str = "https://csserv.ru/", server_ip: str = SERVER_IP
 ) -> requests.models.Response:
     """Запрос информации о сервере."""
 

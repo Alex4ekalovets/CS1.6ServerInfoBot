@@ -21,8 +21,6 @@ from loader import current_state as cs
 from Server.players import player_on_server
 from utils.logging import logger
 
-number_of_tries = 0
-
 
 @bot.message_handler(commands=["players"])
 def show_players_on_server(message: Message) -> None:
@@ -67,23 +65,20 @@ def auto_update_off(message: Message) -> None:
 
 def show_players_if_changed() -> None:
     """Показывает количество игроков, если оно изменилось."""
-    global number_of_tries
     try:
         names, players_count, bots_count = player_on_server()
     except Exception as ex:
-        logger.error(f"{ex}")
-        if number_of_tries < 10:
-            number_of_tries += 1
-        elif number_of_tries == 10:
+        cs.site_request_attempts += 1
+        logger.error(f"Tries: {cs.site_request_attempts}: {ex}")
+        if cs.site_request_attempts == 10:
             for chat_id in cs.chats_id_with_auto_update:
                 message = bot.send_message(
                     chat_id,
                     f"Сайт csserv.ru не отвечает. Информация об игроках временно недоступна",
                 )
                 cs.next_delete_message[chat_id] = message.id
-                number_of_tries += 1
     else:
-        number_of_tries = 0
+        cs.site_request_attempts = 0
         if cs.players != names:
             for chat_id in cs.chats_id_with_auto_update:
                 icon = (

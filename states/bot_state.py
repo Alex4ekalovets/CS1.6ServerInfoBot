@@ -10,6 +10,7 @@ class CurrentState:
     def __init__(self) -> None:
         self.players: Set = set()
         self.current_map: str = ""
+        self.site_request_attempts = 0
         self.next_delete_message: Dict = dict()
         if os.path.isfile("chats_with_autoupdate.json"):
             with open("chats_with_autoupdate.json", "r") as file:

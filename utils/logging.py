@@ -7,7 +7,7 @@ from typing import Any, Dict
 from loguru import logger
 from notifiers.logging import NotificationHandler
 
-from config_data.config import BOT_TOKEN
+from config_data.config import BOT_TOKEN, TG_ID_FOR_LOGS
 
 
 def serialize(record: Dict) -> str:
@@ -41,7 +41,7 @@ logger.add(
 
 params = {
     'token': BOT_TOKEN,
-    'chat_id': '886700102'
+    'chat_id': TG_ID_FOR_LOGS
 }
 tg_handler = NotificationHandler("telegram", defaults=params)
 

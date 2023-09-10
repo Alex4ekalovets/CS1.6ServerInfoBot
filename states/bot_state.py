@@ -12,6 +12,7 @@ class CurrentState:
         self.current_map: str = ""
         self.site_request_attempts = 0
         self.next_delete_message: Dict = dict()
+        self.parse_started = False
         if os.path.isfile("chats_with_autoupdate.json"):
             with open("chats_with_autoupdate.json", "r") as file:
                 self.chats_id_with_auto_update = json.load(file)

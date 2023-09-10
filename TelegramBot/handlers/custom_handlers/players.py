@@ -80,6 +80,8 @@ def show_players_if_changed() -> None:
     else:
         cs.site_request_attempts = 0
         if cs.players != names:
+            logger.info(f"Изменение количества игроков с {len(cs.players)} на {len(names)}")
+            logger.info(f"Игроки на сервере {cs.players}")
             for chat_id in cs.chats_id_with_auto_update:
                 icon = (
                     "📈" if len(cs.players) < players_count else "📉"
@@ -87,9 +89,12 @@ def show_players_if_changed() -> None:
                 cs.players = names
                 players_names = "\n".join(names)
                 if chat_id in cs.next_delete_message and DELETE_PREVIOUS_MESSAGE:
-                    bot.delete_message(
-                        chat_id, cs.next_delete_message[chat_id]
-                    )
+                    try:
+                        bot.delete_message(
+                            chat_id, cs.next_delete_message[chat_id]
+                        )
+                    except Exception as ex:
+                        logger.exception(f"При попытке удаления сообщения вызвано исключение: {ex}")
                 message = bot.send_message(
                     chat_id,
                     f"{icon}На сервере: {players_count}\n"

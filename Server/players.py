@@ -45,9 +45,12 @@ def server_info_request(
         f"{server}includes/server/info/index.php", headers=headers, data=data
     )
     if response.status_code == 200:
-        logger.success("Received a response from the server")
+        if not cs.parse_started:
+            logger.success("Выполняется парсинг")
+            cs.parse_started = True
     else:
         logger.warning(f"Status code: {response.status_code}")
+        cs.parse_started = False
     return response
 
 

@@ -4,6 +4,8 @@ import threading
 import schedule as schedule
 from telebot import custom_filters, types
 
+from utils.logging import logger
+
 from config_data.config import DELAY
 from loader import bot
 from TelegramBot import handlers
@@ -23,4 +25,12 @@ if __name__ == "__main__":
     bot.add_custom_filter(custom_filters.StateFilter(bot))
     t2 = threading.Thread(target=starter)
     t2.start()
-    bot.infinity_polling()
+    while True:
+        logger.info("Старт поллинга")
+        try:
+            bot.infinity_polling()
+        except Exception as ex:
+            logger.exception(f"Ошибка при поллинге: {ex}")
+
+
+

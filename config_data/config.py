@@ -9,12 +9,13 @@ if find_dotenv():
 else:
     exit("Переменные окружения не загружены т.к отсутствует файл .env")
 
-
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 DEFAULT_COMMANDS = (
     ("players", "🔫Игроки на сервере"),
     ("auto_update_on", "🔄Включить автообновление"),
     ("auto_update_off", "🚫Выключить автообновление"),
+    ("change_map", "Сменить карту"),
+    ("bots_control", "Управление ботами"),
 )
 COMMAND_MESSAGES = [
     "/" + DEFAULT_COMMANDS[command][0] for command in range(0, len(DEFAULT_COMMANDS))
@@ -32,3 +33,30 @@ DELAY = 10
 DELETE_PREVIOUS_MESSAGE = True
 # введите ip сервера по примеру ниже для хостинга серверов https://csserv.ru/
 SERVER_IP = '90.189.165.248_27035'
+MAPS = (
+    "aim_headshot",
+    "aim_map",
+    "aim_map2",
+    "cs_assault",
+    "cs_deathmatch",
+    "cs_italy",
+    "cs_mansion",
+    "cs_mansion_snow",
+    "de_aztec",
+    "de_aztec2x2",
+    "de_clan1_mill_2x2",
+    "de_dust",
+    "de_dust2",
+    "de_dust2_2x2",
+    "de_dust2_2x2_winter",
+    "de_dust2_2x2_xmas",
+    "de_dust2_3x3",
+    "de_inferno",
+    "de_inferno_2x2",
+    "de_mirage",
+    "de_mirage_2x2",
+    "de_tuscan",
+    "de_tuscan_2x2",
+    "fy_pool_day",
+    "fy_pool_night",
+)

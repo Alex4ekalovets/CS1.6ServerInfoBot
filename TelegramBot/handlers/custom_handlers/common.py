@@ -6,5 +6,5 @@ from loader import bot
 
 @bot.callback_query_handler(func=lambda call: True)
 def send_select_cmd(call: CallbackQuery) -> None:
-    """Меняет карту на выбранную"""
+    """Отправляет выбранную команду на сервер"""
     server_cmd(call.data)
